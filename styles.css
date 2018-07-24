@@ -1,0 +1,40 @@
+#map {
+    height: 100%;
+}
+html, body{
+    height: 100%;
+    width: 100%;
+}
+img {
+    height: 220px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+#bubbleText{
+    font-size: 20px;
+    font-family: helvetica;
+    font-weight: 800;
+    text-align: center;
+}
+#popup{
+    position: absolute;
+    width: 70%;
+    height: 80%;
+    top: 10%;
+    margin-left: 15%;
+    background-color: white;
+}
+#float{
+    display: block;
+    margin: auto;
+    margin-top: 7%;
+    height: 50%;
+    border: solid black;
+}
+#blocker{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+}
