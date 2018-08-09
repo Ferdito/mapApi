@@ -110,23 +110,23 @@ function initMap() {
     }
 ]
     });
-    
+
     var script = document.createElement('script');
     script.src="comic-book-route_geojson.js";
     document.getElementsByTagName('head')[0].appendChild(script);
-    
+
     window.eqfeed_callback = function(results) {
         function pause(i){
             setTimeout(function(){
                 var coords = results.features[i].geometry.coordinates;
                 var latLng = new google.maps.LatLng(coords[1],coords[0]);
-              
+
                 var marker = new google.maps.Marker({
                     position: latLng,
                     animation: google.maps.Animation.DROP,
                     map: map
                 });
-                
+
                 var character = '<div id=bubbleText>' + results.features[i].properties.personnage_s + '</div>' ;
                 var infowindow = new google.maps.InfoWindow({
                     content: character
@@ -171,9 +171,9 @@ function initMap() {
                     var div = document.createElement('div');
                     document.getElementById('popup').append(div);
                     div.id = 'wiki';
-                    
+
                     new function wikiArt(){
-                        var api = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exsentences=10&list=search&origin=*&srsearch=';
+                        var api = 'https://en.wikipedia.org/w/api.php?action=query&format=json&list=search&origin=*&srsearch=';
                         var toon = results.features[i].properties.personnage_s;
                         var artist = results.features[i].properties.auteur_s;
                         var titleSearch = api  + toon.replace(/\s/g, '%20') + '%20' + artist.replace(/\s/g, '%20') + '%20' + 'comic';
@@ -181,53 +181,56 @@ function initMap() {
                         var name = {};
                         var api2 = 'https://en.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exchars=1000&explaintext&origin=*&titles=';
 
+                        var pageId = [];
+
                         var xhttp1 = new XMLHttpRequest();
                         xhttp1.onreadystatechange = function(){
                             if(this.readyState == 4 && this.status == 200){
                                 var xmlProps1 = this.responseText;
                                 var obj1 = JSON.parse(xmlProps1);
+
                                 name.title = (obj1.query.search[0].title);
+                                pageId = obj1.query.search[0].pageid;
                             }
-                        }                       
+                        }
                         xhttp1.open('GET', titleSearch, true);
                         xhttp1.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
                         xhttp1.send();
-                       
-                        
+
+
                         var sentenceSearch;
-                        
+
                         setTimeout(function(){
                             sentenceSearch = api2 + name.title;
-                        }, 500);
-                        
 
-                        var xhttp = new XMLHttpRequest();
-                        xhttp.onreadystatechange = function(){
-                            if (this.readyState == 4 && this.status == 200) {
-                                var xmlProps = this.responseText;
-                                var obj = JSON.parse(xmlProps);
-                    
-                                console.log(obj);
+                            var linkTitle = name.title.replace(/\s/g, '_');
 
-                                document.getElementById('wiki').innerHTML = character + '<p>' + obj.query + '</p>';
-                                document.getElementById('wiki').prepend(picture);
-                                
-                                picture.style.width= '40%';
-                                picture.style.margin='3% auto 2%';
+                          var xhttp = new XMLHttpRequest();
+                          xhttp.onreadystatechange = function(){
+                              if (this.readyState == 4 && this.status == 200) {
+                                  var xmlProps = this.responseText;
+                                  var obj = JSON.parse(xmlProps);
+
+                                  document.getElementById('wiki').innerHTML = character + '<p>' + '&emsp;' + obj['query']['pages'][pageId]['extract'] + '<a href=\'https://en.wikipedia.org/wiki/' + linkTitle + '\' target=\'_blank\'> Click for more information.' + '</a>'+ '</p>';
+                                  document.getElementById('wiki').prepend(picture);
+
+                                  picture.style.width= '40%';
+                                  picture.style.margin='3% auto 2%';
+                              }
                             }
-                          }
-                        xhttp.open('GET', sentenceSearch, true);
-                        xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-                        xhttp.send();
-                        
+                          xhttp.open('GET', sentenceSearch, true);
+                          xhttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                          xhttp.send();
+                        }, 500);
+
                     }
                     counter++;
                 });
 
-            }, i * 60);   
+            }, i * 60);
         }
         for(i = 0; i < results.features.length; i++){
             pause(i);
         }
-    } 
+    }
 }

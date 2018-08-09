@@ -38,3 +38,9 @@ img {
     position: absolute;
     top: 0;
 }
+#wiki p{
+  overflow-y: scroll;
+  height: 80px;
+  margin: 15px;
+  line-height: 1.5;
+}
